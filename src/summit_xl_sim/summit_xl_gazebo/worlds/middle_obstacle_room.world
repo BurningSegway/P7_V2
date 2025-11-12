@@ -1,0 +1,91 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="middle_obstacle_room">
+    <include>
+      <uri>model://sun</uri>
+    </include>
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+
+    <!-- North Wall (leaning inward along X) -->
+    <model name="wall_north">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>8 0.2 1.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>8 0.2 1.5</size></box></geometry>
+        </visual>
+        <pose>2.5 5.5 0 0 0 0</pose> 
+      </link>
+    </model>
+
+    <!-- South Wall (leaning inward along X) -->
+    <model name="wall_south">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>8 0.2 1.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>8 0.2 1.5</size></box></geometry>
+        </visual>
+        <pose>2.5 -1.5 0 0 0 0</pose> 
+      </link>
+    </model>
+
+    <!-- East Wall (leaning inward along Y) -->
+    <model name="wall_east">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.2 7 1.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 7 1.5</size></box></geometry>
+        </visual>
+        <pose>6.5 2 0 0 0 0</pose> 
+      </link>
+    </model>
+
+    <!-- West Wall (leaning inward along Y) -->
+    <model name="wall_west">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry><box><size>0.2 7 1.5</size></box></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><box><size>0.2 7 1.5</size></box></geometry>
+        </visual>
+        <pose>-1.5 2 0 0 0 0</pose> 
+      </link>
+    </model>
+    
+    <model name="obstacle_1">
+      <static>true</static>
+      <pose>2 1.75 0 0 0 0</pose>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>1 0.5 1</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>1 0.5 1</size>
+            </box>
+          </geometry>
+        </visual>
+      </link>
+    </model>
+
+
+    
+  </world>
+</sdf>

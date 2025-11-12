@@ -1,0 +1,20 @@
+global_costmap:
+  global_frame: $(arg global_frame)
+  robot_base_frame: $(arg base_frame)
+  update_frequency: 5.0
+  publish_frequency: 2.0
+  static_map: false
+  rolling_window: false
+  plugins:
+    - {name: robot_layer, type: 'costmap_2d::StaticLayer'}
+    - {name: robot_b_layer, type: 'costmap_2d::StaticLayer'}
+  
+  robot_layer:
+    map_topic: /robot/map
+    subscribe_to_updates: true
+    unknown_cost_value: 0
+  
+  robot_b_layer:
+    map_topic: /robot_b/map
+    subscribe_to_updates: true
+    unknown_cost_value: 0

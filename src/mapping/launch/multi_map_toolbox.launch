@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <param name="/use_sim_time" value="true" />
+
+  <!-- ==================== ROBOT 1 ==================== -->
+  <group ns="robot">
+    <!-- SLAM Toolbox for robot -->
+    <!-- NOTE: Update the frame names below to match your TF tree (check with: rosrun tf view_frames) -->
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox"
+      output="screen">
+      <param name="odom_frame" value="odom" />
+      <param name="solver_plugin" value="solver_plugins::CeresSolver" />
+      <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
+      <param name="ceres_preconditioner" value="SCHUR_JACOBI" />
+      <param name="ceres_trust_strategy" value="LEVENBERG_MARQUARDT" />
+      <param name="ceres_dogleg_type" value="TRADITIONAL_DOGLEG" />
+      <param name="ceres_loss_function" value="None" />
+      <param name="map_update_interval" value="1" />
+      <param name="resolution" value="0.05" />
+      <param name="map_frame" value="robot_map" />
+      <param name="odom_frame" value="robot_odom" />
+      <param name="base_frame" value="robot_base_link" />
+      <param name="scan_topic" value="/robot/front_laser/scan" />
+      <remap from="/map" to="map" />
+    </node>
+  </group>
+
+  <!-- ==================== Drone ==================== -->
+  <group ns="drone1">
+
+        <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+    <remap from="cloud_in" to="/lidar/points"/>
+    <remap from="scan" to="scan"/>
+    <rosparam>
+      target_frame: lidar_link
+      transform_tolerance: 0.01
+      min_height: -1         # Adjust based on your flight height
+      max_height: 0.5          # This creates a horizontal slice
+      angle_min: -3.14159      # -180 degrees
+      angle_max: 3.14159       # 180 degrees
+      angle_increment: 0.00872664626  # ~0.5 degree resolution
+      scan_time: 0.1
+      range_min: 0.7
+      range_max: 40.0          
+      use_inf: true
+    </rosparam>
+  </node>
+
+    SLAM Toolbox for drone
+    NOTE: Update the frame names below to match your TF tree (check with: rosrun tf view_frames) 
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox"
+      output="screen">
+      <param name="solver_plugin" value="solver_plugins::CeresSolver" />
+      <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
+      <param name="ceres_preconditioner" value="SCHUR_JACOBI" />
+      <param name="ceres_trust_strategy" value="LEVENBERG_MARQUARDT" />
+      <param name="ceres_dogleg_type" value="TRADITIONAL_DOGLEG" />
+      <param name="ceres_loss_function" value="None" />
+      <param name="map_update_interval" value="1" />
+      <param name="resolution" value="0.05" />
+      <param name="map_frame" value="drone_map" />
+      <param name="odom_frame" value="odom" />
+      <param name="base_frame" value="base_link" />
+      <param name="provide_odom_frame" value="true" />
+      <param name="scan_topic" value="/drone1/scan" />
+      <remap from="/map" to="map" />
+    </node>
+  </group>
+
+<node pkg="tf" type="static_transform_publisher" name="robot_to_drone1"
+  args="2 0 0 0 0 0 robot_map drone_map 100" />
+
+  <!-- Costmap combiner -->
+<node pkg="mapping" type="costmap_combiner.py" name="costmap_combiner" output="screen">
+  <param name="output_topic" value="combined_costmap" />
+  <param name="global_size" value="510" />
+  <param name="resolution" value="0.05" />
+  <rosparam param="robot_namespaces">["robot", "drone1"]</rosparam>
+  
+  <!-- Transform offsets (in meters) -->
+  <param name="robot_offset_x" value="0.0" />
+  <param name="robot_offset_y" value="0.0" />
+  <param name="robot_b_offset_x" value="2.0" />
+  <param name="robot_b_offset_y" value="0.0" /> 
+</node>
+
+  <!-- cController -->
+  <node pkg="mapping" type="costmap_controller.py" name="costmap_controller" output="screen">
+
+  </node>
+
+
+  <node name="rviz_map" pkg="rviz" type="rviz" required="true"
+    args="-d /home/ros_workspace/project/Mapping.rviz" />
+
+</launch>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="drone">
+  <link name="base_link"/>
+  
+  <link name="lidar_link"/>
+
+  <link name="imu_link"/>
+
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0 0 0.02" rpy="0 0 0"/>
+  </joint>
+  
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.099 0 -0.03" rpy="0 0 0"/>
+  </joint>
+</robot>

@@ -1,0 +1,84 @@
+<launch>
+    <param name="/use_sim_time" value="true" />
+  <!-- Namespace for multiple drones -->
+  <arg name="ns" default="drone1"/>
+  <arg name="x" default="2"/>
+  <arg name="y" default="0"/>
+  <arg name="z" default="0.1"/>
+  <arg name="R" default="0"/>
+  <arg name="P" default="0"/>
+  <arg name="Y" default="0"/>
+
+  <!-- Spawn Drone SDF -->
+  <node name="spawn_drone" pkg="gazebo_ros" type="spawn_model" output="screen"
+        args="-file $(find x500_py)/models/x500.sdf
+              -sdf -model $(arg ns)
+              -x $(arg x) -y $(arg y) -z $(arg z)
+              -R $(arg R) -P $(arg P) -Y $(arg Y)"/>
+              
+  <!-- MAVROS PX4 -->
+  <group ns="$(arg ns)">
+    <include file="$(find mavros)/launch/px4.launch">
+      <arg name="fcu_url" value="udp://:14540@localhost:14557"/>
+      <arg name="gcs_url" value=""/>
+      <arg name="tgt_system" value="1"/>
+      <arg name="tgt_component" value="1"/>
+
+    </include>
+
+
+<!-- Publish TF: odom -> base_link from MAVROS pose -->
+<node pkg="x500_py" type="mavros_tf_publisher.py" name="mavros_tf_publisher" output="screen">
+</node>
+
+
+
+     
+    <param name="robot_description" textfile="$(find x500_py)/models/drone.urdf"/>
+
+
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
+
+  </group>
+
+
+</launch>
+
+        <!-- ==================== DRONE 1 ==================== 
+
+        <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+    <remap from="cloud_in" to="/lidar/points"/>
+    <remap from="scan" to="scan"/>
+    <rosparam>
+      target_frame: lidar_link
+      transform_tolerance: 0.01
+      min_height: -0.5         # Adjust based on your flight height
+      max_height: 0.5          # This creates a horizontal slice
+      angle_min: -3.14159      # -180 degrees
+      angle_max: 3.14159       # 180 degrees
+      angle_increment: 0.00872664626  # ~0.5 degree resolution
+      scan_time: 0.1
+      range_min: 0.7
+      range_max: 40.0          
+      use_inf: true
+    </rosparam>
+  </node>
+
+    SLAM Toolbox for robot_b 
+    NOTE: Update the frame names below to match your TF tree (check with: rosrun tf view_frames) 
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox"
+      output="screen">
+      <param name="solver_plugin" value="solver_plugins::CeresSolver" />
+      <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
+      <param name="ceres_preconditioner" value="SCHUR_JACOBI" />
+      <param name="ceres_trust_strategy" value="LEVENBERG_MARQUARDT" />
+      <param name="ceres_dogleg_type" value="TRADITIONAL_DOGLEG" />
+      <param name="ceres_loss_function" value="None" />
+      <param name="map_frame" value="drone_map" />
+      <param name="odom_frame" value="odom" />
+      <param name="base_frame" value="base_link" />
+      <param name="provide_odom_frame" value="true" />
+      <param name="scan_topic" value="/drone1/scan" />
+      <remap from="/map" to="map" />
+    </node>
+-->
