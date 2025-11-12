@@ -95,7 +95,7 @@ After the container has been started for the first time and you have built the R
   ```sh
   source devel/setup.bash
   ```
-- You can develop your own ROS packages to include, by adding them to the `src` directory from the root of the ROS workspace. Remember to build the workspace when adding new things again from the root of the workspace: `catkin_make` and source `source devel/setup.bash`
+- You can develop your own ROS packages to include, by adding them to the `src` directory from the root of the ROS workspace https://wiki.ros.org/ROS/Tutorials/CreatingPackage. Remember to build the workspace when adding new things again from the root of the workspace: `catkin_make` and source `source devel/setup.bash`
 
 ### Trying out the simulation
 To run the simulation of the summit and get the data visualized in Rviz run:
@@ -137,6 +137,8 @@ rosrun tf view_frames
 ```
 This will generate a PDF with the frames visualised. For the drone controller you might want to use the robot position, which is encoded in the frame robot_base_link.
 Start by developing the controller that can make the drone fly in zig zag, and then start working on the CBF.
+
+You should also develop this in your own package that is added to the workspace.
 
 ### ROS reading links
 You can follow the tutorial if you want, and apply the commands and tools in the summit container to explore around, dont necesarily install the tutorial package. Tutorial link: https://wiki.ros.org/ROS/Tutorials
