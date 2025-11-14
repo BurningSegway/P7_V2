@@ -139,6 +139,7 @@ This will generate a PDF with the frames visualised. For the drone controller yo
 Start by developing the controller that can make the drone fly in zig zag, and then start working on the CBF.
 
 You should also develop this in your own package that is added to the workspace.
+For optimization I suggest using cvxpy and scipy.optimize
 
 ### ROS reading links
 You can follow the tutorial if you want, and apply the commands and tools in the summit container to explore around, dont necesarily install the tutorial package. Tutorial link: https://wiki.ros.org/ROS/Tutorials
