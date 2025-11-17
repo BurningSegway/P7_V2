@@ -140,10 +140,11 @@ Start by developing the controller that can make the drone fly in zig zag, and t
 
 You should also develop this in your own package that is added to the workspace.
 For QP optimization one could use cvxopt:
+```sh
 curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py
 python2 get-pip.py
 python2 -m pip install cvxopt==1.2.0
-
+```
 ### ROS reading links
 You can follow the tutorial if you want, and apply the commands and tools in the summit container to explore around, dont necesarily install the tutorial package. Tutorial link: https://wiki.ros.org/ROS/Tutorials
 
