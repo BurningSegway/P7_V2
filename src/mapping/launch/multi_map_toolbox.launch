@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
   <param name="/use_sim_time" value="true" />
-
+  
   <!-- ==================== ROBOT 1 ==================== -->
   <group ns="robot">
     <!-- SLAM Toolbox for robot -->
-    <!-- NOTE: Update the frame names below to match your TF tree (check with: rosrun tf view_frames) -->
-    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox"
-      output="screen">
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
       <param name="odom_frame" value="odom" />
       <param name="solver_plugin" value="solver_plugins::CeresSolver" />
       <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
@@ -24,32 +22,29 @@
       <remap from="/map" to="map" />
     </node>
   </group>
-
+  
   <!-- ==================== Drone ==================== -->
   <group ns="drone1">
-
-        <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-    <remap from="cloud_in" to="/lidar/points"/>
-    <remap from="scan" to="scan"/>
-    <rosparam>
-      target_frame: lidar_link
-      transform_tolerance: 0.01
-      min_height: -1         # Adjust based on your flight height
-      max_height: 0.5          # This creates a horizontal slice
-      angle_min: -3.14159      # -180 degrees
-      angle_max: 3.14159       # 180 degrees
-      angle_increment: 0.00872664626  # ~0.5 degree resolution
-      scan_time: 0.1
-      range_min: 0.7
-      range_max: 40.0          
-      use_inf: true
-    </rosparam>
-  </node>
-
-    SLAM Toolbox for drone
-    NOTE: Update the frame names below to match your TF tree (check with: rosrun tf view_frames) 
-    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox"
-      output="screen">
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
+      <remap from="cloud_in" to="/lidar/points"/>
+      <remap from="scan" to="scan"/>
+      <rosparam>
+        target_frame: lidar_link
+        transform_tolerance: 0.01
+        min_height: -1
+        max_height: 0.5
+        angle_min: -3.14159
+        angle_max: 3.14159
+        angle_increment: 0.00872664626
+        scan_time: 0.1
+        range_min: 0.7
+        range_max: 40.0
+        use_inf: true
+      </rosparam>
+    </node>
+    
+    <!-- SLAM Toolbox for drone -->
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
       <param name="solver_plugin" value="solver_plugins::CeresSolver" />
       <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
       <param name="ceres_preconditioner" value="SCHUR_JACOBI" />
@@ -66,31 +61,52 @@
       <remap from="/map" to="map" />
     </node>
   </group>
-
-<node pkg="tf" type="static_transform_publisher" name="robot_to_drone1"
-  args="2 0 0 0 0 0 robot_map drone_map 100" />
-
-  <!-- Costmap combiner -->
-<node pkg="mapping" type="costmap_combiner.py" name="costmap_combiner" output="screen">
-  <param name="output_topic" value="combined_costmap" />
-  <param name="global_size" value="510" />
-  <param name="resolution" value="0.05" />
-  <rosparam param="robot_namespaces">["robot", "drone1"]</rosparam>
   
-  <!-- Transform offsets (in meters) -->
-  <param name="robot_offset_x" value="0.0" />
-  <param name="robot_offset_y" value="0.0" />
-  <param name="robot_b_offset_x" value="2.0" />
-  <param name="robot_b_offset_y" value="0.0" /> 
-</node>
-
-  <!-- cController -->
-  <node pkg="mapping" type="costmap_controller.py" name="costmap_controller" output="screen">
-
+  <!-- Static transform between robot and drone maps -->
+  <node pkg="tf" type="static_transform_publisher" name="robot_to_drone1"
+        args="2 0 0 0 0 0 robot_map drone_map 100" />
+  
+  <!-- Costmap combiner -->
+  <node pkg="mapping" type="costmap_combiner.py" name="costmap_combiner" output="screen">
+    <param name="output_topic" value="combined_costmap" />
+    <param name="global_size" value="510" />
+    <param name="resolution" value="0.05" />
+    <rosparam param="robot_namespaces">["robot", "drone1"]</rosparam>
+    <param name="robot_offset_x" value="0.0" />
+    <param name="robot_offset_y" value="0.0" />
+    <param name="robot_b_offset_x" value="2.0" />
+    <param name="robot_b_offset_y" value="0.0" /> 
   </node>
 
-
+  <node pkg="your_package" type="cbf_safety_filter.py" name="cbf_safety">
+    <param name="wheel_base" value="0.4"/>
+    <param name="safety_radius" value="0.5"/>
+    <param name="gamma" value="1.5"/>
+    <param name="k_dir" value="0.3"/>
+    <param name="P_slack" value="1000.0"/>
+</node>
+  
+  
+  <!-- ==================== LPA* PATH PLANNER ==================== -->
+  <node name="planner_node" pkg="mapping" type="planner_node" output="screen">
+    <!-- Frame IDs -->
+    <param name="robot_frame" value="robot_base_link"/>
+    <param name="map_frame" value="robot_map"/>
+    
+    <!-- Costmap parameters -->
+    <param name="occupancy_threshold" value="50"/>
+    <param name="inflation_radius" value="1.0"/>
+    
+    <!-- Velocity limits -->
+    <param name="max_linear_vel" value="1.5"/>
+    <param name="max_angular_vel" value="2.0"/>
+    
+    <!-- Tolerances -->
+    <param name="goal_tolerance" value="0.2"/>
+    <param name="lookahead_distance" value="1.0"/>
+  </node>
+  
+  <!-- RViz -->
   <node name="rviz_map" pkg="rviz" type="rviz" required="true"
-    args="-d /home/ros_workspace/project/Mapping.rviz" />
-
+        args="-d /home/ros_workspace/project/Mapping.rviz" />
 </launch>

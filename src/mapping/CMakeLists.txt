@@ -1,39 +1,51 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(mapping)
 
-# Find packages
+## Compile as C++14
+add_compile_options(-std=c++14 -O3 -march=native)
+
+## Find catkin and dependencies
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
   nav_msgs
+  tf
   tf2
   tf2_ros
-  geometry_msgs
+  tf2_geometry_msgs
 )
 
-find_package(tf2_ros REQUIRED)
-
-# Catkin package
+###################################
+## catkin specific configuration ##
+###################################
 catkin_package(
-  CATKIN_DEPENDS roscpp rospy std_msgs nav_msgs tf2 tf2_ros geometry_msgs
+  CATKIN_DEPENDS 
+    roscpp 
+    rospy 
+    std_msgs 
+    geometry_msgs 
+    nav_msgs 
+    tf 
+    tf2 
+    tf2_ros
+    tf2_geometry_msgs
 )
 
-# Include directories
+###########
+## Build ##
+###########
+
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  ${OpenCV_INCLUDE_DIRS}
 )
 
-# Executables
-add_executable(map_aggregator src/map_aggregator.cpp)
-
-# Link libraries
-target_link_libraries(map_aggregator 
+## LPA* planner node
+add_executable(planner_node src/lpa_star_planner.cpp)
+target_link_libraries(planner_node
   ${catkin_LIBRARIES}
-  ${OpenCV_LIBRARIES}
 )
 
-# If you have other executables, add them the same way
-# add_executable(other_node src/other_node.cpp)
-# target_link_libraries(other_node ${catkin_LIBRARIES})
+
+

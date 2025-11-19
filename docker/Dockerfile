@@ -99,6 +99,7 @@ RUN pip3 install --no-cache-dir \
     defusedxml \
     netifaces \
     protobuf==3.19.6 \
+    cvxopt \
     pandas 
 
 # Install the C++ API for PyTorch (LibTorch)
@@ -131,7 +132,11 @@ RUN pip3 install --no-cache-dir \
     jsonschema \
     jinja2 \
     empy==3.3.4 \
-    lxml 
+    lxml
+RUN curl https://bootstrap.pypa.io/pip/2.7/get-pip.py -o get-pip.py && \
+    python2 get-pip.py && \
+    python2 -m pip install cvxopt==1.2.0 && \
+    rm get-pip.py
 
 # Initialize rosdep
 RUN rosdep init || true && rosdep update

@@ -2,6 +2,10 @@ global_costmap:
   global_frame: $(arg global_frame)
   robot_base_frame: $(arg base_frame)
   update_frequency: 5.0
+
+   # ADDED: Enable planning into unknown space
+  track_unknown_space: false
+  unknown_cost_value: -1  # Treat unknown space as free (0) instead of obstacle
   
   plugins:
 #    - name: obstacle_laser_layer
@@ -18,6 +22,6 @@ global_costmap:
   static_map_layer:
       lethal_cost_threshold: 94
       map_topic: map
-      unknown_cost_value: 1
+      unknown_cost_value: -1
       trinary_costmap: false
       use_maximum: false
