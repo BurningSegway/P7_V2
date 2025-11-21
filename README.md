@@ -164,6 +164,60 @@ Important packages used by the summit - provided links, and perhaps you might wa
 
 This process, and developing in general is much easier in ubuntu in my opinion, but not as user friendly. If you want in the future to look into using ubuntu, you have the option of dual booting your PC, this will enable you to choose at startup, to boot into windows or ubuntu. Here is a link for a guide (or google yourselfes especially for which version of ubuntu): https://www.instructables.com/Dual-Booting-Windows-and-Ubuntu/
 
+### Update to drones in simulation 21/11
+Now the simulation can run multiple drone instances. To do so follow along:
+```sh
+cd PX4-Autopilot
+```
+Make run directories for each instance.
+```sh
+mkdir -p /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/0
+```
+And
+```sh
+mkdir -p /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/1
+```
+Then make sure to do the following to launch the first instance
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/0
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 0 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+And in another terminal launch the second instance
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/1
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 1 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+Remember to launch the ground robot
+Now two instances of PX4 autopilot is running, then you need to launch the drones in another terminal
+```shh
+roslaunch x500_py x500_multi.launch
+```
+Now you can launch a control node for the drones so you can control drones from your keyboard. This is just an example, you of course have to implement your own control
+Offboard control node for the first drone. In a new terminal launch:
+```shh
+ROS_NAMESPACE=drone1 rosrun offboard_py offb_node.py
+```
+And in a new terminal you do it for the second drone:
+```shh
+ROS_NAMESPACE=drone2 rosrun offboard_py offb_node.py
+```
+Then launch teleop keyboard for the first drone in a new terminal:
+```shh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/drone1/incoming/cmd_vel __name:=teleop1
+```
+And in a new terminal for the second drone:
+
+```shh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/drone2/incoming/cmd_vel __name:=teleop2
+```
+
+
+
+
 #
 Written by Pierre ROB7 161
 #
