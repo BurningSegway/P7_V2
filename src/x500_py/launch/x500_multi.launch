@@ -1,0 +1,71 @@
+<launch>
+    <param name="/use_sim_time" value="true" />
+
+    <!-- ======================================== -->
+    <!-- ============= DRONE 1 ================== -->
+    <!-- ======================================== -->
+    <group ns="drone1">
+
+        <!-- Spawn Drone 1 -->
+        <node name="spawn_drone1" pkg="gazebo_ros" type="spawn_model" output="screen"
+              args="-file $(find x500_py)/models/x500_drone1.sdf
+                    -sdf -model drone1
+                    -x 2 -y 0 -z 0.1 -R 0 -P 0 -Y 0"/>
+
+        <!-- MAVROS for Drone 1 (PX4 instance 0 uses port 14557) -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="udp://:14540@localhost:14557"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="1"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+
+        <!-- URDF and TF -->
+        <param name="robot_description" textfile="$(find x500_py)/models/drone.urdf"/>
+
+        <node name="robot_state_publisher"
+              pkg="robot_state_publisher"
+              type="robot_state_publisher">
+            <param name="tf_prefix" value="drone1"/>
+        </node>
+
+        <node pkg="x500_py" type="mavros_tf_publisher.py" name="tf_pub_1" output="screen">
+            <param name="tf_prefix" value="drone1"/>
+        </node>
+    </group>
+
+
+    <!-- ======================================== -->
+    <!-- ============= DRONE 2 ================== -->
+    <!-- ======================================== -->
+    <group ns="drone2">
+
+        <!-- Spawn Drone 2 -->
+        <node name="spawn_drone2" pkg="gazebo_ros" type="spawn_model" output="screen"
+              args="-file $(find x500_py)/models/x500_drone2.sdf
+                    -sdf -model drone2
+                    -x -2 -y 0 -z 0.1 -R 0 -P 0 -Y 0"/>
+
+        <!-- MAVROS for Drone 2 (PX4 instance 1 uses port 14559) -->
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="udp://:14541@localhost:14558"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="2"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+
+        <!-- URDF and TF -->
+        <param name="robot_description" textfile="$(find x500_py)/models/drone.urdf"/>
+
+        <node name="robot_state_publisher"
+              pkg="robot_state_publisher"
+              type="robot_state_publisher">
+            <param name="tf_prefix" value="drone2"/>
+        </node>
+
+        <node pkg="x500_py" type="mavros_tf_publisher.py" name="tf_pub_2" output="screen">
+            <param name="tf_prefix" value="drone2"/>
+        </node>
+    </group>
+
+</launch>

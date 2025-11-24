@@ -24,7 +24,7 @@
 
   <!-- Run move_base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base">
-  	<remap from="cmd_vel" to="$(arg cmd_vel_topic)" />
+  	<remap from="cmd_vel" to="/desired/cmd_vel" />    <!-- Changed, was: $(arg cmd_vel_topic) -->
     <remap from="odom" to="$(arg odom_topic)" />
     
     <!-- Move base params -->
