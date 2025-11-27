@@ -17,10 +17,8 @@
 
     <!-- Spawn Drone SDF -->
     <node name="$(arg spawn_name)" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-file $(find x500_py)/models/x500.sdf
+          args="-file $(find x500_py)/models/x500_drone1.sdf
                         -sdf -model $(arg ns)
-                        -param mavlink_tcp_port $(arg mavlink_tcp_port)
-                        -param mavlink_udp_port $(arg mavlink_udp_port)
                         -x $(arg x) -y $(arg y) -z $(arg z)
                         -R $(arg R) -P $(arg P) -Y $(arg Y)"/>
 
@@ -42,7 +40,7 @@
         </node>
 
         <!-- MAVROS TF Publisher with namespace -->
-        <node pkg="x500_py" type="mavros_tf_publisher.py" name="mavros_tf_publisher" output="screen">
+       <node pkg="x500_py" type="mavros_tf_publisher.py" name="mavros_tf_publisher" output="screen">
             <param name="tf_prefix" value="$(arg ns)"/>
         </node>
     </group>

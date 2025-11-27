@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 """
-Fixed-Size Costmap Combiner
+Fixed-Size Costmap Combiner with TF Support
 Creates a fixed global costmap and layers robot maps into it
-Handles maps of different sizes as they grow
+Uses TF transforms to properly align maps from different robots
 """
 
 import rospy
 from nav_msgs.msg import OccupancyGrid
+from tf import TransformListener
 import numpy as np
 
 class FixedCostmapCombiner:
@@ -14,18 +15,15 @@ class FixedCostmapCombiner:
         rospy.init_node('costmap_combiner')
         
         # Parameters
-        self.robot_namespaces = rospy.get_param('~robot_namespaces', ['robot', 'robot_b'])
+        self.robot_namespaces = rospy.get_param('~robot_namespaces', ['robot', 'drone1'])
         self.output_topic = rospy.get_param('~output_topic', 'combined_costmap')
         self.global_size = rospy.get_param('~global_size', 100)  # cells
         self.resolution = rospy.get_param('~resolution', 0.05)  # meters
+        self.global_frame = rospy.get_param('~global_frame', 'global_map')
         
-        # Transforms for each robot (x, y offset in meters)
-        self.transforms = {}
-        for robot_ns in self.robot_namespaces:
-            transform_x = rospy.get_param('~{}_offset_x'.format(robot_ns), 0.0)
-            transform_y = rospy.get_param('~{}_offset_y'.format(robot_ns), 0.0)
-            self.transforms[robot_ns] = (transform_x, transform_y)
-            rospy.loginfo("Transform for %s: (%.2f, %.2f)", robot_ns, transform_x, transform_y)
+        # TF listener
+        self.tf_listener = TransformListener()
+        rospy.sleep(0.5)  # Give TF time to stabilize
         
         # Storage
         self.maps = {}
@@ -43,16 +41,17 @@ class FixedCostmapCombiner:
                            callback_args=robot_ns)
         
         # Timer to publish combined map
-        rospy.Timer(rospy.Duration(0.2), self.publish_combined)
+        rospy.Timer(rospy.Duration(0.1), self.publish_combined)
         
         rospy.loginfo("Costmap Combiner initialized")
         rospy.loginfo("Global size: %dx%d cells, Resolution: %.3f m/cell", 
                      self.global_size, self.global_size, self.resolution)
+        rospy.loginfo("Publishing to: %s with frame: %s", self.output_topic, self.global_frame)
 
     def init_global_costmap(self):
-        """Initialize fixed-size global costmap"""
+        """Initialize fixed-size global costmap centered at origin"""
         self.global_costmap = OccupancyGrid()
-        self.global_costmap.header.frame_id = 'robot_map'
+        self.global_costmap.header.frame_id = self.global_frame
         self.global_costmap.info.resolution = self.resolution
         self.global_costmap.info.width = self.global_size
         self.global_costmap.info.height = self.global_size
@@ -69,6 +68,20 @@ class FixedCostmapCombiner:
     def map_callback(self, msg, robot_ns):
         """Store incoming map"""
         self.maps[robot_ns] = msg
+        rospy.logdebug("Received map from %s, size: %dx%d", robot_ns, msg.info.width, msg.info.height)
+
+    def get_transform(self, robot_ns):
+        """Get transform from robot's map frame to global frame using TF"""
+        try:
+            robot_map_frame = '{}_map'.format(robot_ns)
+            # Get transform from robot_map to global_map
+            self.tf_listener.waitForTransform(self.global_frame, robot_map_frame, rospy.Time(0), timeout=rospy.Duration(1.0))
+            trans, rot = self.tf_listener.lookupTransform(self.global_frame, robot_map_frame, rospy.Time(0))
+            rospy.logdebug("Transform for %s: translation=(%.2f, %.2f)", robot_ns, trans[0], trans[1])
+            return (trans[0], trans[1])
+        except Exception as e:
+            rospy.logwarn("Could not get transform for %s: %s", robot_ns, str(e))
+            return (0.0, 0.0)
 
     def world_to_global_index(self, world_x, world_y):
         """Convert world coordinates to global costmap index"""
@@ -100,17 +113,21 @@ class FixedCostmapCombiner:
         # Layer each robot map
         for robot_ns in self.robot_namespaces:
             if robot_ns not in self.maps or self.maps[robot_ns] is None:
+                rospy.logdebug("No map received from %s", robot_ns)
                 continue
             
             robot_map = self.maps[robot_ns]
             
-            # Get transform for this robot
-            transform_x, transform_y = self.transforms.get(robot_ns, (0.0, 0.0))
+            # Get transform for this robot from TF
+            transform_x, transform_y = self.get_transform(robot_ns)
             
-            # Get the map's origin in world coordinates
+            # Get the map's origin
             map_origin_x = robot_map.info.origin.position.x
             map_origin_y = robot_map.info.origin.position.y
             map_resolution = robot_map.info.resolution
+            
+            rospy.logdebug("Processing %s: map_origin=(%.2f, %.2f), tf_transform=(%.2f, %.2f)", 
+                          robot_ns, map_origin_x, map_origin_y, transform_x, transform_y)
             
             # Layer each cell from robot's map into global costmap
             for cell_idx in range(len(robot_map.data)):
@@ -121,11 +138,11 @@ class FixedCostmapCombiner:
                 cell_y = cell_idx // robot_map.info.width
                 cell_x = cell_idx % robot_map.info.width
                 
-                # Convert to world coordinates (local to this robot)
+                # Convert to world coordinates relative to robot's map origin
                 local_world_x = map_origin_x + cell_x * map_resolution
                 local_world_y = map_origin_y + cell_y * map_resolution
                 
-                # Apply transform to get global coordinates
+                # Apply TF transform to get global coordinates
                 global_world_x = local_world_x + transform_x
                 global_world_y = local_world_y + transform_y
                 

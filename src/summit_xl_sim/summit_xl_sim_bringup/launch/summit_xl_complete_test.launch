@@ -4,7 +4,7 @@
 	<!-- arg to config the launch file-->
 	<!-- GPS default position of Robotnik at Fuente del Jarro-->
 
-	<arg name="launch_rviz" default="true"/>
+	<arg name="launch_rviz" default="false"/>
 	<arg name="gazebo_world" default="/home/ros_workspace/src/mapping/worlds/Test_world"/>
 	<!-- <arg name="gazebo_world" default="$(find summit_xl_gazebo)/worlds/summit_xl_office.world"/> -->
 	<arg name="gazebo_gui" default="true"/>
@@ -26,7 +26,7 @@
 	<arg name="xacro_robot_a" default="$(arg default_xacro)"/>
 
 	<arg name="map_file_a" default="willow_garage/willow_garage.yaml"/>
-	<arg name="gmapping_robot_a" default="true"/>							<!-- changed to true to launch gmapping -->
+	<arg name="gmapping_robot_a" default="false"/>							<!-- changed to true to launch gmapping -->
 	<arg name="move_base_robot_a" default="true"/>
 	<arg name="ekf_localization_robot_a" default="false"/>					<!-- changed to true to improve localisation without amcl -->
 	<arg name="amcl_and_mapserver_a" default="false"/>						<!-- changed to false to live map and plan -->

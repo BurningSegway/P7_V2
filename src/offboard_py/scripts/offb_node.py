@@ -11,7 +11,7 @@ current_state = State()
 def state_cb(msg):
     global current_state
     current_state = msg
-    #print(msg)
+    print(msg)
 
 
 def pose_cb(msg):

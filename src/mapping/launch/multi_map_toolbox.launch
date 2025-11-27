@@ -13,7 +13,7 @@
       <param name="ceres_trust_strategy" value="LEVENBERG_MARQUARDT" />
       <param name="ceres_dogleg_type" value="TRADITIONAL_DOGLEG" />
       <param name="ceres_loss_function" value="None" />
-      <param name="map_update_interval" value="1" />
+      <param name="map_update_interval" value="2" />
       <param name="resolution" value="0.05" />
       <param name="map_frame" value="robot_map" />
       <param name="odom_frame" value="robot_odom" />
@@ -25,12 +25,13 @@
   
   <!-- ==================== Drone ==================== -->
   <group ns="drone1">
-    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan">
-      <remap from="cloud_in" to="/lidar/points"/>
+    <!-- Convert pointcloud to laserscan -->
+    <node pkg="pointcloud_to_laserscan" type="pointcloud_to_laserscan_node" name="pointcloud_to_laserscan" output="screen">
+      <remap from="cloud_in" to="lidar/points"/>
       <remap from="scan" to="scan"/>
       <rosparam>
-        target_frame: lidar_link
-        transform_tolerance: 0.01
+        target_frame: drone1/lidar_link
+        transform_tolerance: 0.1
         min_height: -1
         max_height: 0.5
         angle_min: -3.14159
@@ -43,7 +44,7 @@
       </rosparam>
     </node>
     
-    <!-- SLAM Toolbox for drone -->
+    <!-- SLAM Toolbox for drone1 -->
     <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox" output="screen">
       <param name="solver_plugin" value="solver_plugins::CeresSolver" />
       <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
@@ -51,41 +52,61 @@
       <param name="ceres_trust_strategy" value="LEVENBERG_MARQUARDT" />
       <param name="ceres_dogleg_type" value="TRADITIONAL_DOGLEG" />
       <param name="ceres_loss_function" value="None" />
-      <param name="map_update_interval" value="1" />
+      <param name="map_update_interval" value="2" />
       <param name="resolution" value="0.05" />
-      <param name="map_frame" value="drone_map" />
-      <param name="odom_frame" value="odom" />
-      <param name="base_frame" value="base_link" />
-      <param name="provide_odom_frame" value="true" />
+      <param name="map_frame" value="drone1_map" />
+      <param name="odom_frame" value="drone1/odom" />
+      <param name="base_frame" value="drone1/base_link" />
+      <param name="provide_odom_frame" value="false" />
       <param name="scan_topic" value="/drone1/scan" />
       <remap from="/map" to="map" />
     </node>
   </group>
   
-  <!-- Static transform between robot and drone maps -->
-  <node pkg="tf" type="static_transform_publisher" name="robot_to_drone1"
-        args="2 0 0 0 0 0 robot_map drone_map 100" />
+  <!-- Static transforms to align maps in global frame -->
+  <node pkg="tf" type="static_transform_publisher" name="robot_map_to_global" 
+        args="0 0 0 0 0 0 global_map robot_map 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="drone_map_to_global" 
+        args="2.0 0 0 0 0 0 global_map drone1_map 100" />
   
   <!-- Costmap combiner -->
   <node pkg="mapping" type="costmap_combiner.py" name="costmap_combiner" output="screen">
     <param name="output_topic" value="combined_costmap" />
     <param name="global_size" value="510" />
     <param name="resolution" value="0.05" />
+    <param name="global_frame" value="global_map" />
     <rosparam param="robot_namespaces">["robot", "drone1"]</rosparam>
     <param name="robot_offset_x" value="0.0" />
     <param name="robot_offset_y" value="0.0" />
-    <param name="robot_b_offset_x" value="2.0" />
-    <param name="robot_b_offset_y" value="0.0" /> 
+    <param name="drone1_offset_x" value="2.0" />
+    <param name="drone1_offset_y" value="0.0" /> 
   </node>
 
   <node pkg="mapping" type="cbf_safety_filter.py" name="cbf_safety">
     <param name="wheel_base" value="0.4"/>
-    <param name="safety_radius" value="0.5"/>
+    <param name="safety_radius" value="0.6"/>
     <param name="gamma" value="1.5"/>
     <param name="k_dir" value="0.3"/>
     <param name="P_slack" value="1000.0"/>
-</node>
+  </node>
+
+  <node pkg="mapping" type="cbf_drone_comm.py" name="cbf_comm_range_filter" output="screen">
+    <param name="comm_radius" value="5.0" />         
+    <param name="gamma" value="2.0" />               
+    <param name="P_slack" value="1000000.0" />       
+  </node>
   
+  <node pkg="mapping" type="robot_boundry_vis.py" name="robot_boundry_visualizer" output="screen">
+    <param name="frame_id" value="robot_base_link" />
+    <param name="radius" value="0.5" />
+  </node>
+
+  <node pkg="mapping" type="input_vector_vis.py" name="input_vector_visualizer" output="screen">
+    <param name="frame_id" value="drone1/base_link" />
+    <param name="twist_topic" value="drone1/incoming/cmd_vel" />
+    <param name="arrow_scale" value="1.0" />
+  </node>
   <!-- RViz -->
   <node name="rviz_map" pkg="rviz" type="rviz" required="true"
         args="-d /home/ros_workspace/project/Mapping.rviz" />

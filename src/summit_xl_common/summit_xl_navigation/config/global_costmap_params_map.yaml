@@ -1,5 +1,5 @@
 global_costmap:
-  global_frame: $(arg global_frame)
+  global_frame: global_map
   robot_base_frame: $(arg base_frame)
   update_frequency: 5.0
 
@@ -21,7 +21,7 @@ global_costmap:
 
   static_map_layer:
       lethal_cost_threshold: 94
-      map_topic: map
+      map_topic: /combined_costmap 
       subscribe_to_updates: true ## ADDED
       unknown_cost_value: -1
       trinary_costmap: false
