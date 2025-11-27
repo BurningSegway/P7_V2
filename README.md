@@ -215,8 +215,39 @@ And in a new terminal for the second drone:
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/drone2/incoming/cmd_vel __name:=teleop2
 ```
 
-
-
+### Update to drones in simulation 21/11
+To properly start run summit in one terminal:
+```sh
+roslaunch summit_xl_sim_bringup summit_xl_complete_test.launch
+```
+In another terminal launch PX4 (Minik you still just use make)
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/0
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 0 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+Now launch the drone in another terminal:
+```shh
+roslaunch x500_py x500.launch
+```
+Wait for this to be done, and dont continue before the PX4 terminal says ready for takeoff
+Once it has said that, in a new terminal launch the mapping such with:
+```shh
+roslaunch mapping multi_map_toolbox.launch
+```
+Now launch the drone offboard node in another terminal:
+```shh
+ROS_NAMESPACE=drone1 rosrun offboard_py offb_node.py
+```
+In a new terminal launch the teleop:
+```shh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/drone1/desired/cmd_vel __name:=teleop1
+```
+You can also control the ground robot. In a new terminal launch teleop for it:
+```sh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/desired/cmd_vel
+```
 
 #
 Written by Pierre ROB7 161
