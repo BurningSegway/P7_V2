@@ -260,6 +260,7 @@ cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/0
 ```shh
 /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 0 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
 ```
+And in another terminal:
 ```sh
 cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/1
 ```
