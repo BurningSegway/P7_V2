@@ -248,6 +248,54 @@ You can also control the ground robot. In a new terminal launch teleop for it:
 ```sh
 rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/desired/cmd_vel
 ```
+### Update: BOTH CBFs implemented
+To properly start run summit in one terminal:
+```sh
+roslaunch summit_xl_sim_bringup summit_xl_complete_test.launch
+```
+In another terminal launch PX4 for both drones
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/0
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 0 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/1
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 1 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+Now launch the drone in another terminal:
+```shh
+roslaunch x500_py x500_multi.launch
+```
+Wait for this to be done, and dont continue before the PX4 terminal says ready for takeoff
+Once it has said that, in a new terminal launch the mapping such with:
+```shh
+roslaunch mapping multi_map_toolbox.launch
+```
+Now launch the drone offboard node in another terminal:
+```shh
+ROS_NAMESPACE=drone1 rosrun offboard_py offb_node.py
+```
+In a new terminal launch the teleop:
+```shh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/drone1/desired/cmd_vel __name:=teleop1
+```
+Now launch the drone offboard node in another terminal for the other drone:
+```shh
+ROS_NAMESPACE=drone2 rosrun offboard_py offb_node.py
+```
+In a new terminal launch the teleop:
+```shh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/drone2/desired/cmd_vel __name:=teleop2
+```
+You can also control the ground robot. In a new terminal launch teleop for it:
+```sh
+rosrun teleop_twist_keyboard teleop_twist_keyboard.py cmd_vel:=/desired/cmd_vel
+```
+
 
 #
 Written by Pierre ROB7 161
