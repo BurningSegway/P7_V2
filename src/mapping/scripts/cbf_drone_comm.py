@@ -48,15 +48,17 @@ class CBFCommRangeFilter:
         self.global_frame = rospy.get_param('~global_frame', 'global_map')
         self.drone_frame = rospy.get_param('~drone_frame', 'drone1/base_link')
         self.robot_frame = rospy.get_param('~robot_frame', 'robot_base_link')
+        self.sub_topic = rospy.get_param('~sub_topic', 'drone1/desired/cmd_vel')
+        self.pub_topic = rospy.get_param('~pub_topic', 'drone1/incoming/cmd_vel')
         
         # Subscribers (only need teleop now)
-        self.teleop_sub = rospy.Subscriber('drone1/desired/cmd_vel', Twist, self.teleop_callback) #tag teleop, eller controller
+        self.teleop_sub = rospy.Subscriber(self.sub_topic, Twist, self.teleop_callback) #tag teleop, eller controller
         
         # Timer for control loop - also queries TF
         self.control_timer = rospy.Timer(rospy.Duration(0.05), self.cmd_callback)
         
         # Publisher for filtered commands
-        self.safe_cmd_pub = rospy.Publisher('drone1/incoming/cmd_vel', Twist, queue_size=10) #smid de in i offboard controller
+        self.safe_cmd_pub = rospy.Publisher(self.pub_topic, Twist, queue_size=10) #smid de in i offboard controller
         
         rospy.loginfo("CBF Communication Range Filter Initialized")
         rospy.loginfo("Communication radius: {}m, Gamma: {}".format(self.alpha, self.gamma))

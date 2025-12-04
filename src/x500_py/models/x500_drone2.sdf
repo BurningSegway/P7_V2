@@ -1,5 +1,6 @@
+<?xml version='1.0'?>
 <sdf version='1.5'>
-  <model name='X5002'>
+  <model name='X5001'>
     <link name='base_link'>
       <pose>0 0 0 0 0 0</pose>
       <inertial>
@@ -38,7 +39,8 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>file:///home/ros_workspace/src/x500_py/models/X500_drone.stl</uri>          </mesh>
+            <uri>file:///home/ros_workspace/src/x500_py/models/X500_drone.stl</uri>
+          </mesh>
         </geometry>
         <material>
           <script>
@@ -150,7 +152,7 @@
         <plugin name='gazebo_ros_laser_controller' filename='libgazebo_ros_velodyne_laser.so'>
           <robotNamespace></robotNamespace>
           <topicName>drone2/lidar/points</topicName>
-          <frameName>lidar_link</frameName>
+          <frameName>drone2/lidar_link</frameName>
           <min_range>0.1</min_range>
           <max_range>40.0</max_range>
           <gaussianNoise>0.01</gaussianNoise>
@@ -163,8 +165,6 @@
       <child>lidar_link</child>
       <parent>base_link</parent>
     </joint>
-
-
 
     <link name='rotor_0'>
       <pose>0.176 -0.176 0.056 0 0 0</pose>
@@ -197,21 +197,6 @@
           </friction>
         </surface>
       </collision>
-      <visual name='rotor_0_visual'>
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://iris/meshes/iris_prop_ccw.dae</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Blue</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual>
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
@@ -262,21 +247,6 @@
           </friction>
         </surface>
       </collision>
-      <visual name='rotor_1_visual'>
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://iris/meshes/iris_prop_ccw.dae</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual>
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
@@ -327,21 +297,6 @@
           </friction>
         </surface>
       </collision>
-      <visual name='rotor_2_visual'>
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://iris/meshes/iris_prop_cw.dae</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/Blue</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual>
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
@@ -392,21 +347,6 @@
           </friction>
         </surface>
       </collision>
-      <visual name='rotor_3_visual'>
-        <pose>0 0 0 0 0 0</pose>
-        <geometry>
-          <mesh>
-            <scale>1 1 1</scale>
-            <uri>model://iris/meshes/iris_prop_cw.dae</uri>
-          </mesh>
-        </geometry>
-        <material>
-          <script>
-            <name>Gazebo/DarkGrey</name>
-            <uri>file://media/materials/scripts/gazebo.material</uri>
-          </script>
-        </material>
-      </visual>
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
@@ -509,9 +449,18 @@
       <child>gps0::link</child>
       <parent>base_link</parent>
     </joint>
-    <plugin name='groundtruth_plugin' filename='libgazebo_groundtruth_plugin.so'>
-      <robotNamespace/>
+
+    <!-- Ground Truth using P3D plugin (standard Gazebo plugin) -->
+    <plugin name='gazebo_ros_p3d' filename='libgazebo_ros_p3d.so'>
+      <robotNamespace>/drone2</robotNamespace>
+      <bodyName>base_link</bodyName>
+      <topicName>ground_truth/state</topicName>
+      <frameName>world</frameName>
+      <xyzOffsets>0 0 0</xyzOffsets>
+      <rpyOffsets>0 0 0</rpyOffsets>
+      <updateRate>1000</updateRate>
     </plugin>
+
     <plugin name='magnetometer_plugin' filename='libgazebo_magnetometer_plugin.so'>
       <robotNamespace/>
       <pubRate>100</pubRate>

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <launch>
     <param name="/use_sim_time" value="true" />
 
@@ -30,9 +31,11 @@
             <param name="publish_frequency" value="50"/>
         </node>
 
-        <node pkg="x500_py" type="mavros_tf_publisher.py" name="tf_pub_1" output="screen">
+        <!-- Use ground truth TF publisher instead of drift-prone MAVROS odometry -->
+        <!-- The old mavros_tf_publisher.py is disabled -->
+        <!-- <node pkg="x500_py" type="mavros_tf_publisher.py" name="tf_pub_1" output="screen">
             <param name="tf_prefix" value="drone1"/>
-        </node>
+        </node> -->
     </group>
 
 
@@ -65,9 +68,21 @@
             <param name="publish_frequency" value="50"/>
         </node>
 
-        <node pkg="x500_py" type="mavros_tf_publisher.py" name="tf_pub_2" output="screen">
+        <!-- Use ground truth TF publisher instead of drift-prone MAVROS odometry -->
+        <!-- The old mavros_tf_publisher.py is disabled -->
+        <!-- <node pkg="x500_py" type="mavros_tf_publisher.py" name="tf_pub_2" output="screen">
             <param name="tf_prefix" value="drone2"/>
-        </node>
+        </node> -->
     </group>
+
+    <!-- ======================================== -->
+    <!-- Ground Truth TF Publisher for ALL Drones -->
+    <!-- ======================================== -->
+    <!-- This node publishes accurate Gazebo ground truth poses as TF transforms -->
+    <!-- It subscribes to /drone*/ground_truth/odometry and publishes drone*/odom -> drone*/base_link TF -->
+    <node pkg="x500_py" type="gazebo_groundtruth_tf_publisher.py" 
+          name="groundtruth_tf_publisher" output="screen">
+        <rosparam param="drone_names">["drone1", "drone2"]</rosparam>
+    </node>
 
 </launch>

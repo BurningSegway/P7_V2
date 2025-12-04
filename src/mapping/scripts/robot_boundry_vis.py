@@ -9,7 +9,8 @@ class RobotCircleVisualizer:
         rospy.init_node('robot_circle_visualizer')
         
         # Create publisher for markers
-        self.marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+        vis_topic = rospy.get_param('~vis_topic', 'robot/visualization_marker/radius')
+        self.marker_pub = rospy.Publisher(vis_topic, Marker, queue_size=10)
         
         # Parameters
         self.circle_radius = rospy.get_param('~circle_radius', 5.0)

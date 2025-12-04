@@ -13,7 +13,8 @@ class TwistArrowVisualizer:
         rospy.Subscriber(twist_topic, Twist, self.twist_callback)
         
         # Create publisher for markers
-        self.marker_pub = rospy.Publisher('drone1/visualization_marker', Marker, queue_size=10)
+        vis_topic = rospy.get_param('~vis_topic', 'drone1/visualization_marker/vector')
+        self.marker_pub = rospy.Publisher(vis_topic, Marker, queue_size=10)
         
         # Parameters
         self.frame_id = rospy.get_param('~frame_id', 'drone1/base_link')
