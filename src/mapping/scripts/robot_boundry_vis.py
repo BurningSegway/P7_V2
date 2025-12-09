@@ -7,7 +7,6 @@ import math
 class RobotCircleVisualizer:
     def __init__(self):
         rospy.init_node('robot_circle_visualizer')
-        
         # Create publisher for markers
         vis_topic = rospy.get_param('~vis_topic', 'robot/visualization_marker/radius')
         self.marker_pub = rospy.Publisher(vis_topic, Marker, queue_size=10)
@@ -18,11 +17,20 @@ class RobotCircleVisualizer:
         self.frame_id = rospy.get_param('~frame_id', 'robot_base_link')
         self.update_rate = rospy.get_param('~update_rate', 10)
         
+        # Color parameters
+        self.color_r = rospy.get_param('~color_r', 0.0)
+        self.color_g = rospy.get_param('~color_g', 1.0)
+        self.color_b = rospy.get_param('~color_b', 0.0)
+        self.color_a = rospy.get_param('~color_a', 0.5)
+        
+        # Line width
+        self.line_width = rospy.get_param('~line_width', 0.05)
+        
         # Publishing rate
         self.rate = rospy.Rate(self.update_rate)
-    
+
     def create_circle_marker(self):
-        """Create a circle marker using LINE_LIST"""
+        """Create a circle marker using LINE_STRIP"""
         marker = Marker()
         marker.header.frame_id = self.frame_id
         marker.header.stamp = rospy.Time.now()
@@ -31,11 +39,11 @@ class RobotCircleVisualizer:
         marker.action = Marker.ADD
         
         # Set marker properties
-        marker.scale.x = 0.05  # Line width
-        marker.color.r = 0.0
-        marker.color.g = 1.0
-        marker.color.b = 0.0
-        marker.color.a = 0.5
+        marker.scale.x = self.line_width
+        marker.color.r = self.color_r
+        marker.color.g = self.color_g
+        marker.color.b = self.color_b
+        marker.color.a = self.color_a
         
         # Generate circle points
         marker.points = []
@@ -53,11 +61,13 @@ class RobotCircleVisualizer:
         marker.pose.orientation.w = 1.0
         
         return marker
-    
+
     def run(self):
         """Main loop to publish markers"""
         rospy.loginfo("Robot Circle Visualizer started")
         rospy.loginfo("Publishing circle with radius: %.2f m" % self.circle_radius)
+        rospy.loginfo("Color: R=%.2f, G=%.2f, B=%.2f, A=%.2f" % (self.color_r, self.color_g, self.color_b, self.color_a))
+        rospy.loginfo("Line width: %.2f" % self.line_width)
         
         while not rospy.is_shutdown():
             marker = self.create_circle_marker()

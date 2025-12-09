@@ -3,7 +3,7 @@
   <link name="base_link">
     <visual>
       <geometry>
-        <mesh filename="file:///home/ros_workspace/src/x500_py/models/X500_drone.stl" scale="1 1 1"/>
+        <mesh filename="file:///home/ros_workspace/src/x500_py/models/X500_drone_mod.stl" scale="1 1 1"/>
       </geometry>
       <origin xyz="0 0 0" rpy="1.5708 0 0"/>
       <material name="darkgrey">

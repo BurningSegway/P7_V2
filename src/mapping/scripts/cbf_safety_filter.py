@@ -199,8 +199,8 @@ class CBFSafetyFilter:
         Lg_h_val = self.Lg_h(self.x, self.y, self.theta, 
                              self.closest_x0, self.closest_y0)
         
-        if h_val > 5.0:
-            return u_nom, 0.0
+        #if h_val > 5.0:
+        #    return u_nom, 0.0
         
         try:
             # Decision variables: [Vr, Vl, s]

@@ -5,7 +5,9 @@
 	<!-- GPS default position of Robotnik at Fuente del Jarro-->
 
 	<arg name="launch_rviz" default="false"/>
-	<arg name="gazebo_world" default="/home/ros_workspace/src/mapping/worlds/Test_world"/>
+	 <!-- <arg name="gazebo_world" default="/home/ros_workspace/src/mapping/worlds/Test_world"/> -->
+	 <arg name="gazebo_world" default="/home/ros_workspace/src/mapping/worlds/obstacle_rich"/> 
+	<!-- <arg name="gazebo_world" default="/home/ros_workspace/src/mapping/worlds/Cylinder_arena"/> -->
 	<!-- <arg name="gazebo_world" default="$(find summit_xl_gazebo)/worlds/summit_xl_office.world"/> -->
 	<arg name="gazebo_gui" default="true"/>
 	<arg name="omni_drive" default="false"/>

@@ -19,9 +19,20 @@
       <param name="odom_frame" value="robot_odom" />
       <param name="base_frame" value="robot_base_link" />
       <param name="scan_topic" value="/robot/front_laser/scan" />
+      <param name="max_laser_range" value="7.0" />
       <remap from="/map" to="map" />
     </node>
   </group>
+
+  <node pkg="mapping" type="ground_level_publisher.py" name="ground_level_publisher_d1" output="screen">
+  <param name="drone_namespace" value="drone1" />
+  <param name="reference_frame" value="drone1/odom" />
+</node>
+
+<node pkg="mapping" type="ground_level_publisher.py" name="ground_level_publisher_d2" output="screen">
+  <param name="drone_namespace" value="drone2" />
+  <param name="reference_frame" value="drone2/odom" />
+</node>
   
   <!-- ==================== Drone 1 ==================== -->
   <group ns="drone1">
@@ -30,16 +41,16 @@
       <remap from="cloud_in" to="lidar/points"/>
       <remap from="scan" to="scan"/>
       <rosparam>
-        target_frame: drone1/lidar_link
+        target_frame: drone1/ground_level
         transform_tolerance: 0.1
-        min_height: -1
-        max_height: -0.2
+        min_height: 1.0
+        max_height: 2.0
         angle_min: -3.14159
         angle_max: 3.14159
         angle_increment: 0.00872664626
         scan_time: 0.1
         range_min: 0.7
-        range_max: 40.0
+        range_max: 12.0
         use_inf: true
       </rosparam>
     </node>
@@ -75,16 +86,16 @@
       <remap from="cloud_in" to="lidar/points"/>
       <remap from="scan" to="scan"/>
       <rosparam>
-        target_frame: drone2/lidar_link
+        target_frame: drone2/ground_level
         transform_tolerance: 0.1
-        min_height: -1
-        max_height: -0.2
+        min_height: 1.0
+        max_height: 2.0
         angle_min: -3.14159
         angle_max: 3.14159
         angle_increment: 0.00872664626
         scan_time: 0.1
         range_min: 0.7
-        range_max: 40.0
+        range_max: 12.0
         use_inf: true
       </rosparam>
     </node>
@@ -138,12 +149,12 @@
     <param name="resolution" value="0.05" />
     <param name="global_frame" value="global_map" />
     <rosparam param="robot_namespaces">["robot", "drone1", "drone2"]</rosparam>
-    <param name="robot_offset_x" value="0.0" />
-    <param name="robot_offset_y" value="0.0" />
-    <param name="drone1_offset_x" value="2.0" />
-    <param name="drone1_offset_y" value="0.0" />
-    <param name="drone2_offset_x" value="-2.0" />
-    <param name="drone2_offset_y" value="0.0" />
+    <param name="robot_offset_x" value="-9.0" />
+    <param name="robot_offset_y" value="-9.0" />
+    <param name="drone2_offset_x" value="-10.69" />
+    <param name="drone2_offset_y" value="-7.31" />
+    <param name="drone1_offset_x" value="-7.31" />
+    <param name="drone1_offset_y" value="-10.69" />
   </node>
 
   <node pkg="mapping" type="cbf_safety_filter.py" name="cbf_safety">
@@ -176,8 +187,8 @@
 
   <!-- Communcation and collision avoidance - combined -->
   <node pkg="mapping" type="cbf_drone_combined.py" name="cbf_comm_range_filter_d1" output="screen">
-    <param name="comm_radius" value="5.0" />         
-    <param name="safety_margin" value="0.2" />
+    <param name="comm_radius" value="10.0" />         
+    <param name="safety_margin" value="0.5" />
     <param name="gamma_comm" value="10.0" />
     <param name="gamma_coll" value="7.0" />
     <param name="drone_radius" value="0.5" />
@@ -191,8 +202,8 @@
   </node>
 
   <node pkg="mapping" type="cbf_drone_combined.py" name="cbf_comm_range_filter_d2" output="screen">
-    <param name="comm_radius" value="5.0" />         
-    <param name="safety_margin" value="0.2" />
+    <param name="comm_radius" value="10.0" />         
+    <param name="safety_margin" value="0.5" />
     <param name="gamma_comm" value="10.0" />
     <param name="gamma_coll" value="7.0" />
     <param name="drone_radius" value="0.5" />
@@ -205,24 +216,82 @@
     <param name="pub_topic" value="drone2/incoming/cmd_vel" /> 
   </node>
   
-  <node pkg="mapping" type="robot_boundry_vis.py" name="robot_boundry_visualizer_robot" output="screen">
+  <!-- Lidar Range Summit-->
+  <node pkg="mapping" type="robot_boundry_vis.py" name="robot_lidar_visualizer" output="screen">
     <param name="frame_id" value="robot_base_link" />
-    <param name="vis_topic" value="robot/visualization_marker/radius" />    
-    <param name="circle_radius" value="5.0" />
+    <param name="vis_topic" value="robot/visualization_marker/lidar/radius" />    
+    <param name="circle_radius" value="7.0" />
+    <param name="color_r" value="0.0" />
+    <param name="color_g" value="0.0" />
+    <param name="color_b" value="1.0" />
+    <param name="color_a" value="0.5" />
+    <param name="line_width" value="0.05" />
+  </node>
+  
+  <!-- Comm radius -->
+  <node pkg="mapping" type="robot_boundry_vis.py" name="robot_comm_visualizer" output="screen">
+    <param name="frame_id" value="robot_base_link" />
+    <param name="vis_topic" value="robot/visualization_marker/comm/radius" />    
+    <param name="circle_radius" value="10.0" />
+    <param name="color_r" value="1.0" />
+    <param name="color_g" value="0.0" />
+    <param name="color_b" value="0.0" />
+    <param name="color_a" value="0.5" />
+    <param name="line_width" value="0.05" />
   </node>
 
+
+  <!-- Coll radius Drone 1 -->
   <node pkg="mapping" type="robot_boundry_vis.py" name="robot_boundry_visualizer_d1" output="screen">
     <param name="frame_id" value="drone1/base_link" />
     <param name="vis_topic" value="drone1/visualization_marker/radius" />    
     <param name="circle_radius" value="0.5" />
+    <param name="color_r" value="1.0" />
+    <param name="color_g" value="0.0" />
+    <param name="color_b" value="0.0" />
+    <param name="color_a" value="0.5" />
+    <param name="line_width" value="0.05" />
   </node>
 
+  <!-- Coll radius dron2 -->
   <node pkg="mapping" type="robot_boundry_vis.py" name="robot_boundry_visualizer_d2" output="screen">
     <param name="frame_id" value="drone2/base_link" />
     <param name="vis_topic" value="drone2/visualization_marker/radius" />    
     <param name="circle_radius" value="0.5" />
+    <param name="color_r" value="1.0" />
+    <param name="color_g" value="0.0" />
+    <param name="color_b" value="0.0" />
+    <param name="color_a" value="0.5" />
+    <param name="line_width" value="0.05" />
   </node>
 
+  <!-- Lidar radius drone 1 -->
+  <node pkg="mapping" type="robot_boundry_vis.py" name="robot_lidar_visualizer_d1" output="screen">
+    <param name="frame_id" value="drone1/base_link" />
+    <param name="vis_topic" value="drone1/visualization_marker/lidar/radius" />    
+    <param name="circle_radius" value="12.0" />
+    <param name="color_r" value="0.0" />
+    <param name="color_g" value="1.0" />
+    <param name="color_b" value="0.0" />
+    <param name="color_a" value="0.5" />
+    <param name="line_width" value="0.05" />
+  </node>
+
+  <!-- Lidar radius drone 2 -->
+  <node pkg="mapping" type="robot_boundry_vis.py" name="robot_lidar_visualizer_d2" output="screen">
+    <param name="frame_id" value="drone2/base_link" />
+    <param name="vis_topic" value="drone2/visualization_marker/lidar/radius" />    
+    <param name="circle_radius" value="12.0" />
+    <param name="color_r" value="0.0" />
+    <param name="color_g" value="1.0" />
+    <param name="color_b" value="0.0" />
+    <param name="color_a" value="0.5" />
+    <param name="line_width" value="0.05" />
+  </node>
+
+
+
+  
   <node pkg="mapping" type="input_vector_vis.py" name="input_vector_visualizer_d1" output="screen">
     <param name="frame_id" value="drone1/base_link" />
     <param name="twist_topic" value="drone1/incoming/cmd_vel" />

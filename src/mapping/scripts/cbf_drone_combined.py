@@ -39,8 +39,8 @@ class CBFCommRangeFilter:
         self.P_slack = rospy.get_param('~P_slack', 1e6)  # Slack variable penalty
         
         # Control limits (velocity saturation for drone)
-        self.lb = np.array([-1.5, -1.5])  # [Vx, Vy] lower bounds
-        self.ub = np.array([1.5, 1.5])    # [Vx, Vy] upper bounds
+        self.lb = np.array([-2.0, -2.0])  # [Vx, Vy] lower bounds
+        self.ub = np.array([2.0, 2.0])    # [Vx, Vy] upper bounds
         
         # Nominal control from teleop
         self.u_nom_x = 0.0
@@ -160,7 +160,7 @@ class CBFCommRangeFilter:
         """
         dx = x1 - x2
         dy = y1 - y2
-        return dx**2 + dy**2 - (2.0 * self.drone_radius)**2
+        return dx**2 + dy**2 - (2.0 * (self.drone_radius+0.2))**2
     
     def Lg_h_collision(self, x1, y1, x2, y2):
         """

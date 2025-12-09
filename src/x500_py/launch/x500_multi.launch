@@ -10,7 +10,8 @@
         <node name="spawn_drone1" pkg="gazebo_ros" type="spawn_model" output="screen"
               args="-file $(find x500_py)/models/x500_drone1.sdf
                     -sdf -model drone1
-                    -x 2 -y 0 -z 0.1 -R 0 -P 0 -Y 0"/>
+                    -x -7.31 -y -10.69 -z 0.4 -R 0 -P 0 -Y 0"/>
+                    
 
         <!-- MAVROS for Drone 1 (PX4 instance 0 uses port 14557) -->
         <include file="$(find mavros)/launch/px4.launch">
@@ -45,7 +46,7 @@
         <node name="spawn_drone2" pkg="gazebo_ros" type="spawn_model" output="screen"
               args="-file $(find x500_py)/models/x500_drone2.sdf
                     -sdf -model drone2
-                    -x -2 -y 0 -z 0.1 -R 0 -P 0 -Y 0"/>
+                    -x -10.69 -y -7.31 -z 0.4 -R 0 -P 0 -Y 0"/>
 
         <!-- MAVROS for Drone 2 (PX4 instance 1 uses port 14559) -->
         <include file="$(find mavros)/launch/px4.launch">
