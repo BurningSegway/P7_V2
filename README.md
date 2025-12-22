@@ -1,4 +1,152 @@
-# Setting up the SummitXL simulation in Windows
+# Setting up the SummitXL simulation in Windows and Linux
+- This guide should get you up and running with the ROS Docker environment
+- In the end, is my suggestion of what to check up on regarding ROS, and some of the packages SummitXL uses
+- The guide also sets you up with the SAR scenario showed in the report
+- Below this entry, you find old entries, and entries added after updates.
+### Installing Docker Desktop for Windows and an X server (not necessary in Linux)
+Docker Desktop can be downloaded through this link: https://docs.docker.com/desktop/setup/install/windows-install/
+
+Open windows command prompts (CMD): press windows key and type `cmd`
+
+Update linux subsystems for windows:
+```sh
+wsl --update
+```
+
+Install VcXserv from: https://vcxsrv.com/
+
+Remember to start the X server by launching `XLaunch` in windows, before starting the docker container.
+
+### Clone git repository
+If you dont have a gitHub account go set that up: https://github.com/
+
+Open windows command prompts (CMD): press windows key and type `cmd`, in Linux open a terminal.
+
+Navigate to the directory you want to clone the git repo to, example
+
+```sh
+cd Documents
+```
+Then clone this repo:
+```sh
+git clone https://github.com/BurningSegway/P7_V2.git
+```
+### Build Docker container only done once, unless you edit Dockerfile
+**Note, you need around 10 GB to build the container**
+
+First navigate to the P7_V2 directory:
+```sh
+cd P7_V2
+```
+Build docker container:
+```sh
+docker build -t summit -f docker/Dockerfile .
+```
+This takes some time to complete.
+
+### Run the Docker container
+Navigate to the P7 directory, here you find the script `run_summit_sim.bat`
+Open your favorite code editor like VScode, then edit line 42 to match your own path, which can be seen in the cmd if you have cd'ed into the P7 directory. In Linux you open the `run_summit_sim.sh` and edit the corresponding line, to include your own file path.
+
+Run the script to start the Docker container in cmd:
+
+```sh
+run_summit_sim.bat
+```
+Or in Linux
+```sh
+run_summit_sim.sh
+```
+Make sure you run the file with .bat extension and not .sh. bat is for windows and sh is for linux.
+The container should now start
+
+**THE FOLLOWING STEPS SHOULD ONLY BE DONE ONCE**
+
+- First time starting the container, the directory `SafeReinforcementLearning` should appear in the P7 directory. Copy the folder `src` into `SafeReinforcementLearning`.
+- Build the ROS environment, make sure you are in the root of the ROS workspace, the command prompt path should be `/home/ros_workspace` (defualt directory when entering the container):
+  ```sh
+  catkin_make
+  ```
+- You also need to build some of the drone related stuff.
+  In the root of the ros workspace clone the autopilot library
+  ```sh
+  git clone https://github.com/PX4/PX4-Autopilot.git
+  ```
+  Once finished continue to build
+  ```sh
+  cd PX4-Autopilot
+  ```
+  ```sh
+  make px4_sitl_default gazebo
+  ```
+  Once the simulation has started and you see a drone in gazebo just close it agin by pressing ctrl+C in the terminal.
+- Now cd into the `PX4-Autopilit/build`, replace the `px4_sitl_default` folder with the one provided in this repo.
+
+Every time you start a container, or enter a running container, you must source the ROS workspace from the root of the ROS workspace:
+```sh
+source devel/setup.bash
+```
+### Notes after running the container for the first time
+After the container has been started for the first time and you have built the ROS workspace, here are some notes on running the containers and ROS.
+- Make sure the X server is running on windows: press windows key and search `XLaunch`
+- Once the container has been started, multiple terminals can enter the container
+- You can check to see if the container is already running:
+  ```sh
+  docker ps
+  ```
+  If the container is already running you can enter it by:
+  ```sh
+  docker exec -it summit bash
+  ```
+- remember to source the ROS workspace every time you enter the container:
+  ```sh
+  source devel/setup.bash
+  ```
+- You can develop your own ROS packages to include, by adding them to the `src` directory from the root of the ROS workspace https://wiki.ros.org/ROS/Tutorials/CreatingPackage. Remember to build the workspace when adding new things again from the root of the workspace: `catkin_make` and source `source devel/setup.bash`
+
+# Starting the SAR scenario
+- IF you want more control of the drones and Summit, than the SAR scenario provides, see older entries.
+First launch the simulation:
+```sh
+roslaunch summit_xl_sim_bringup summit_xl_complete_test.launch
+```
+Wait until it is done, and provides yellow errors about transformations not available, now launch two instances of PX4-Autopilot:
+In another terminal launch PX4 for both drones
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/0
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 0 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+And in another terminal:
+```sh
+cd /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/rootfs/1
+```
+```shh
+/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 1 -d /home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/etc
+```
+Now launch the drone in another terminal:
+```shh
+roslaunch x500_py x500_multi.launch
+```
+Wait for this to be done, and dont continue before the PX4 terminals says ready for takeoff
+Once it has said that, in a new terminal launch the mapping with:
+```shh
+roslaunch mapping multi_map_toolbox.launch
+```
+Once RViz has launched, and you see maps appear, launch the drone policies:
+In a terminal launch
+``sh
+rosrun simple_velocity velocity_controller __ns:=drone1
+``
+And then for the other drone launch:
+``sh
+rosrun simple_velocity velocity_controller __ns:=drone1
+``
+Once the drones are in the air (This takes some time depening on computer hardware.) and the terminal reports back they are in HOLD mode. Set a goal in RViz or programmatically, and watch it go!
+Good luck :)
+
+# Setting up the SummitXL simulation in Windows (OLD)
 - This guide should get you up and running with the ROS Docker environment
 - In the end, is my suggestion of what to check up on regarding ROS, and some of the packages SummitXL uses
 ### Installing Docker Desktop for Windows and an X server
