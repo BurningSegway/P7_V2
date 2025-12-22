@@ -45,6 +45,7 @@ docker run -it --rm \
     -e QT_X11_NO_MITSHM=1 \
     -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
     -v /home/pierre/SummitXL/Summit_xl_base/SafeReinforcementLearning:/home/ros_workspace \
+    -v /home/pierre/SummitXL/Summit_xl_base/cartographer:/home/cartographer_ws \
     -v /dev:/dev \
     --name summit \
     summit:latest \
