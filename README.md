@@ -136,13 +136,13 @@ roslaunch mapping multi_map_toolbox.launch
 ```
 Once RViz has launched, and you see maps appear, launch the drone policies:
 In a terminal launch
-``sh
+```sh
 rosrun simple_velocity velocity_controller __ns:=drone1
-``
+```
 And then for the other drone launch:
-``sh
+```sh
 rosrun simple_velocity velocity_controller __ns:=drone1
-``
+```
 Once the drones are in the air (This takes some time depening on computer hardware.) and the terminal reports back they are in HOLD mode. Set a goal in RViz or programmatically, and watch it go!
 Good luck :)
 
