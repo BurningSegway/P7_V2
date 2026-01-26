@@ -1,0 +1,1 @@
+rosbag record /robot/cmd_vel /robot/robotnik_base_control/odom /obstacle/point /robot/move_base_simple/goal /drone1/desired/cmd_vel /drone2/desired/cmd_vel /drone1/mavros/setpoint_velocity/cmd_vel /drone2/mavros/setpoint_velocity/cmd_vel /drone1/ground_truth/state /drone2/ground_truth/state

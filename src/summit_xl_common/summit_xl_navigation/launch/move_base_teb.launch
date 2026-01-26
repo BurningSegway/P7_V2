@@ -24,13 +24,14 @@
 
   <!-- Run move_base -->
   <node pkg="move_base" type="move_base" respawn="false" name="move_base">
-  	<remap from="cmd_vel" to="$(arg cmd_vel_topic)" />
+  	<remap from="cmd_vel" to="/desired/cmd_vel" />    <!-- Changed, was: $(arg cmd_vel_topic) -->
     <remap from="odom" to="$(arg odom_topic)" />
     
     <!-- Move base params -->
     <rosparam file="$(arg config_path)/move_base_params.yaml" command="load" />
     
     <!-- Global costmap params-->
+    <rosparam file="$(arg config_path)/global_planner_params.yaml" command="load" /> <!-- ADDED-->
     <rosparam file="$(arg config_path)/costmap_common_params.yaml" command="load" ns="global_costmap" subst_value="true"/>
     <rosparam file="$(arg config_path)/global_costmap_params_map.yaml" command="load" subst_value="true"/>
 

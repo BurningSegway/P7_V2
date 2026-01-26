@@ -7,6 +7,7 @@
     <arg name="x_init_pose" default="0"/>
     <arg name="y_init_pose" default="0"/>
     <arg name="z_init_pose" default="0"/>
+    <arg name="yaw_init_pose" default="0"/>
     <arg name="xacro_robot_package" default="summit_xl_description"/>
     <arg name="xacro_robot" default="summit_xl_std.urdf.xacro"/>
     <arg name="xacro_robot_path" default="$(eval find(xacro_robot_package) + '/robots/' + xacro_robot)"/>
@@ -71,6 +72,7 @@
           args="-x $(arg x_init_pose)
                 -y $(arg y_init_pose)
                 -z $(arg z_init_pose)
+                -Y $(arg yaw_init_pose)
                 -J $(arg arm_prefix)_joint_1 0.0
                 -J $(arg arm_prefix)_joint_2 2.9
                 -J $(arg arm_prefix)_joint_3 0.0

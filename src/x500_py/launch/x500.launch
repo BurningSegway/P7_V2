@@ -1,0 +1,48 @@
+<launch>
+    <param name="/use_sim_time" value="true" />
+
+    <!-- Namespace for drone -->
+    <arg name="ns" default="drone1"/>
+    <arg name="x" default="2"/>
+    <arg name="y" default="0"/>
+    <arg name="z" default="0.1"/>
+    <arg name="R" default="0"/>
+    <arg name="P" default="0"/>
+    <arg name="Y" default="0"/>
+    <arg name="fcu_url" default="udp://:14540@localhost:14557"/>
+    <arg name="mavlink_tcp_port" default="4560"/>
+    <arg name="mavlink_udp_port" default="14560"/>
+    <arg name="tgt_system" default="1"/>
+    <arg name="spawn_name" default="spawn_drone"/>
+
+    <!-- Spawn Drone SDF -->
+    <node name="$(arg spawn_name)" pkg="gazebo_ros" type="spawn_model" output="screen"
+          args="-file $(find x500_py)/models/x500_drone1.sdf
+                        -sdf -model $(arg ns)
+                        -x $(arg x) -y $(arg y) -z $(arg z)
+                        -R $(arg R) -P $(arg P) -Y $(arg Y)"/>
+
+    <!-- MAVROS PX4 within namespace -->
+    <group ns="$(arg ns)">
+        <include file="$(find mavros)/launch/px4.launch">
+            <arg name="fcu_url" value="$(arg fcu_url)"/>
+            <arg name="gcs_url" value=""/>
+            <arg name="tgt_system" value="$(arg tgt_system)"/>
+            <arg name="tgt_component" value="1"/>
+        </include>
+
+        <!-- Robot Description with namespace prefix -->
+        <param name="robot_description" textfile="$(find x500_py)/models/drone.urdf"/>
+        
+        <!-- Robot State Publisher - publishes TF with namespace -->
+        <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+            <param name="tf_prefix" value="$(arg ns)"/>
+        </node>
+
+        <!-- MAVROS TF Publisher with namespace -->
+       <node pkg="x500_py" type="mavros_tf_publisher.py" name="mavros_tf_publisher" output="screen">
+            <param name="tf_prefix" value="$(arg ns)"/>
+        </node>
+    </group>
+
+</launch>

@@ -1,0 +1,18 @@
+<launch>
+  <!-- Gazebo -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find gazebo_ros)/worlds/empty.world"/>
+    <arg name="paused" value="false"/>
+    <arg name="use_sim_time" value="true"/>
+  </include>
+
+  <!-- PX4 SITL directly -->
+<node name="px4_sitl" pkg="roslaunch" type="python" output="screen"
+      args="-c '/home/ros_workspace/PX4-Autopilot/build/px4_sitl_default/bin/px4 -i 0 -d /home/ros_workspace/PX4-Autopilot/ROMFS/px4fmu_common'" />
+
+  <!-- MAVROS -->
+  <include file="$(find mavros)/launch/px4.launch">
+    <arg name="fcu_url" value="udp://:14540@localhost:14557"/>
+    <arg name="gcs_url" value=""/>
+  </include>
+</launch>

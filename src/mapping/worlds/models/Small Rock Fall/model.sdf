@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<sdf version="1.6">
+  <model name="small_rock_fall">
+    <static>true</static>
+    <!--Uncomment "base_link" and its contents for previewing the rocks-->
+    <!--<link name="base_link">-->
+    <!--  <visual name="visual0">-->
+    <!--    <pose>0 0.027399 0.109854 0 -0 0</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--  <visual name="visual1">-->
+    <!--    <pose>-0.134528 0 0 0 -0 0</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--  <visual name="visual2">-->
+    <!--    <pose>0 0.103163 0 0 -0 0</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--  <visual name="visual3">-->
+    <!--    <pose>0.060517 -0.10277 0.000346 -0.508176 -0.296696 1.08741</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--  <visual name="visual4">-->
+    <!--    <pose>0.099166 0 0 0 -0 0</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--  <visual name="visual5">-->
+    <!--    <pose>0 -0.103685 0.101457 0 0 -1.12847</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--  <visual name="visual6">-->
+    <!--    <pose>-0.015971 0 0 0 -0 0</pose>-->
+    <!--    <geometry>-->
+    <!--      <mesh>-->
+    <!--        <uri>meshes/FallingRock06.dae</uri>-->
+    <!--      </mesh>-->
+    <!--    </geometry>-->
+    <!--  </visual>-->
+    <!--</link>-->
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>0 0.027399 0.109854 0 -0 0</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>-0.134528 0 0 0 -0 0</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>0 0.103163 0 0 -0 0</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>0.060517 -0.10277 0.000346 -0.508176 -0.296696 1.08741</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>0.099166 0 0 0 -0 0</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>0 -0.103685 0.101457 0 0 -1.12847</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+    <plugin filename="libignition-gazebo-breadcrumbs-system.so" name="ignition::gazebo::systems::Breadcrumbs">
+      <max_deployments>5</max_deployments>
+      <disable_physics_time>15</disable_physics_time>
+      <allow_renaming>true</allow_renaming>
+      <breadcrumb>
+        <sdf version="1.6">
+          <include>
+            <uri>https://fuel.ignitionrobotics.org/1.0/OpenRobotics/models/Falling Rock 6</uri>
+            <name>Rock</name>
+            <pose>-0.015971 0 0 0 -0 0</pose>
+          </include>
+        </sdf>
+      </breadcrumb>
+    </plugin>
+  </model>
+</sdf>
+

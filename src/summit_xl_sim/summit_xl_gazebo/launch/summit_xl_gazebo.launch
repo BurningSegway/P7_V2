@@ -25,9 +25,10 @@
 	<!-- GPS default position of Robotnik at Fuente del Jarro-->
 	<!-- robot a -->
 	<arg name="id_robot_a" default="robot"/>
-	<arg name="x_init_pose_robot_a" default="0" />
-	<arg name="y_init_pose_robot_a" default="0" />
+	<arg name="x_init_pose_robot_a" default="-9" />
+	<arg name="y_init_pose_robot_a" default="-9" />
 	<arg name="z_init_pose_robot_a" default="0" />
+	<arg name="yaw_init_pose" default="0.785398"/>
     <arg name="ekf_localization_robot_a" default="false"/>
     <arg name="ekf_localization_mode_a" default="odom"/>
 	<arg name="gmapping_robot_a" default="true"/>
@@ -72,7 +73,7 @@
 	<!-- robot c -->
 	<arg name="id_robot_c" default="robot_c"/>
 	<arg name="x_init_pose_robot_c" default="0" />
-	<arg name="y_init_pose_robot_c" default="2" />
+	<arg name="y_init_pose_robot_c" default="0" />
 	<arg name="z_init_pose_robot_c" default="0" />
     <arg name="ekf_localization_robot_c" default="false"/>
     <arg name="ekf_localization_mode_c" default="odom"/>
@@ -98,6 +99,7 @@
 		<arg name="x_init_pose" value="$(arg x_init_pose_robot_a)"/>
 		<arg name="y_init_pose" value="$(arg y_init_pose_robot_a)"/>
 		<arg name="z_init_pose" value="$(arg z_init_pose_robot_a)"/>
+		<arg name="yaw_init_pose" value="$(arg yaw_init_pose)"/>
 		<arg name="xacro_robot_package" value="$(arg xacro_robot_package_a)"/>
 		<arg name="xacro_robot" value="$(arg xacro_robot_a)"/>
         <arg name="launch_robot_ekf_localization" value="$(arg ekf_localization_robot_a)"/>

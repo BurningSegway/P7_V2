@@ -31,6 +31,7 @@
     <rosparam file="$(arg config_path)/move_base_params.yaml" command="load" />
     
     <!-- Global costmap params-->
+    <rosparam file="$(arg config_path)/global_planner_params.yaml" command="load" /> <!-- ADDED-->
     <rosparam file="$(arg config_path)/costmap_common_params.yaml" command="load" ns="global_costmap" subst_value="true"/>
     <rosparam file="$(arg config_path)/eband_global_costmap_params.yaml" command="load" subst_value="true"/>
     
@@ -45,4 +46,3 @@
   </node>
 
 </launch>
-

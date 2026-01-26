@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <param name="/use_sim_time" value="true" />
+
+  <!-- ==================== ROBOT 1 ==================== -->
+  <group ns="robot">
+    <!-- SLAM Toolbox for robot -->
+    <!-- NOTE: Update the frame names below to match your TF tree (check with: rosrun tf view_frames) -->
+    <node pkg="slam_toolbox" type="async_slam_toolbox_node" name="slam_toolbox"
+      output="screen">
+      <param name="odom_frame" value="odom" />
+      <param name="solver_plugin" value="solver_plugins::CeresSolver" />
+      <param name="ceres_linear_solver" value="SPARSE_NORMAL_CHOLESKY" />
+      <param name="ceres_preconditioner" value="SCHUR_JACOBI" />
+      <param name="ceres_trust_strategy" value="LEVENBERG_MARQUARDT" />
+      <param name="ceres_dogleg_type" value="TRADITIONAL_DOGLEG" />
+      <param name="ceres_loss_function" value="None" />
+      <param name="map_frame" value="robot_map" />
+      <param name="odom_frame" value="robot_odom" />
+      <param name="base_frame" value="robot_base_link" />
+      <param name="scan_topic" value="/robot/front_laser/scan" />
+      <remap from="/map" to="map" />
+    </node>
+  </group>
+
+  <!-- ==================== Drone ==================== -->
+  <group ns="drone1">
+<node pkg="rtabmap_ros" type="rtabmap" name="rtabmap" output="screen" args="--delete_db_on_start">
+ <remap from="scan_cloud" to="/lidar/points"/>
+      
+      <!-- Output remapping -->
+      <remap from="/map" to="map"/>
+      
+      <!-- Frame configuration -->
+      <param name="frame_id" type="string" value="base_link"/>
+      <param name="odom_frame_id" type="string" value="odom"/>
+      <param name="map_frame_id" type="string" value="map"/>
+      
+      <!-- CRITICAL: Disable RGB/Visual inputs -->
+      <param name="subscribe_depth" type="bool" value="false"/>
+      <param name="subscribe_rgb" type="bool" value="false"/>
+      <param name="subscribe_rgbd" type="bool" value="false"/>
+      <param name="subscribe_stereo" type="bool" value="false"/>
+      <param name="subscribe_scan" type="bool" value="false"/>
+      <param name="subscribe_scan_cloud" type="bool" value="true"/>
+      
+      <!-- Use ICP for odometry -->
+      <param name="Reg/Strategy" type="string" value="1"/> <!-- 1=ICP -->
+      <param name="Icp/PointToPlane" type="string" value="true"/>
+      <param name="Icp/Iterations" type="string" value="10"/>
+      <param name="Icp/VoxelSize" type="string" value="0.1"/>
+      <param name="Icp/MaxCorrespondenceDistance" type="string" value="1.0"/>
+      
+      <!-- Memory management -->
+      <param name="Mem/IncrementalMemory" type="string" value="true"/>
+      <param name="Mem/InitWMWithAllNodes" type="string" value="false"/>
+      
+      <!-- 2D occupancy grid parameters -->
+      <param name="Grid/Sensor" type="string" value="0"/> <!-- 0=laser scan -->
+      <param name="Grid/3D" type="bool" value="false"/>
+      <param name="Grid/RangeMax" type="string" value="40.0"/>
+      <param name="Grid/CellSize" type="string" value="0.05"/>
+      <param name="Grid/ClusterRadius" type="string" value="1"/>
+      <param name="Grid/GroundIsObstacle" type="string" value="false"/>
+      <param name="Grid/RayTracing" type="string" value="true"/>
+      
+      <!-- FLOOR FILTERING -->
+      <param name="Grid/NormalsSegmentation" type="string" value="true"/>
+      <param name="Grid/MaxGroundAngle" type="string" value="60"/> <!-- degrees -->
+      <param name="Grid/MaxGroundHeight" type="string" value="-0.5"/> <!-- relative to base_link -->
+      <param name="Grid/MinGroundHeight" type="string" value="-3.0"/> <!-- filter floor below this -->
+      <param name="Grid/MaxObstacleHeight" type="string" value="0.5"/> <!-- only obstacles up to 2m -->
+      <param name="Grid/NormalK" type="string" value="20"/> <!-- neighbors for normal estimation -->
+      <param name="Grid/ClusterRadius" type="string" value="0.1"/>
+      
+      <!-- Noise filtering -->
+      <param name="Grid/NoiseFilteringRadius" type="string" value="0.1"/>
+      <param name="Grid/NoiseFilteringMinNeighbors" type="string" value="5"/>
+      
+      <!-- Occupancy update rates -->
+      <param name="Grid/ProbHit" type="string" value="0.7"/> <!-- probability of obstacle when hit -->
+      <param name="Grid/ProbMiss" type="string" value="0.4"/> <!-- probability when ray passes through -->
+      <param name="Grid/Eroded" type="string" value="false"/>
+      
+      <!-- Loop closure -->
+      <param name="RGBD/ProximityBySpace" type="string" value="true"/>
+      <param name="RGBD/ProximityPathMaxNeighbors" type="string" value="10"/>
+      <param name="RGBD/NeighborLinkRefining" type="string" value="true"/>
+      <param name="RGBD/AngularUpdate" type="string" value="0.01"/>
+      <param name="RGBD/LinearUpdate" type="string" value="0.01"/>
+      
+      <!-- Visualization -->
+      <param name="RGBD/CreateOccupancyGrid" type="string" value="true"/>
+    </node>
+  </group>
+
+<node pkg="tf" type="static_transform_publisher" name="robot_to_drone1"
+  args="2 0 0 0 0 0 robot_map map 100" />
+
+  <!-- Costmap combiner -->
+<node pkg="mapping" type="costmap_combiner.py" name="costmap_combiner" output="screen">
+  <param name="output_topic" value="combined_costmap" />
+  <param name="global_size" value="500" />
+  <param name="resolution" value="0.05" />
+  <rosparam param="robot_namespaces">["robot", "robot_b"]</rosparam>
+</node>
+
+  <!-- cController -->
+  <node pkg="mapping" type="costmap_controller.py" name="costmap_controller" output="screen">
+    <param name="robot_frame" value="robot_base_link" />
+    <param name="map_frame" value="robot_map" />
+    <param name="max_linear_vel" value="1.0" />
+    <param name="max_angular_vel" value="1.0" />
+    <param name="goal_tolerance" value="0.5" />
+  </node>
+
+
+  <node name="rviz_map" pkg="rviz" type="rviz" required="true"
+    args="-d /home/ros_workspace/project/Mapping.rviz" />
+
+</launch>
